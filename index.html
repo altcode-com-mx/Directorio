@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Altcode · Directorio de prospectos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <div class="logo-dot"></div>
+        Directorio de prospectos
+      </div>
+      <div class="header-count" id="totalCount">0 clientes</div>
+    </header>
+
+    <div class="container">
+      <div class="layout">
+        <aside class="panel">
+          <div class="panel-header">Nuevo cliente</div>
+          <div class="form-body">
+            <div class="field">
+              <label for="f-nombre">Nombre / empresa / persona</label>
+              <input
+                type="text"
+                id="f-nombre"
+                placeholder="Ej. Estudio Vega, S.A. de C.V."
+                autocomplete="organization"
+              />
+            </div>
+            <div class="field">
+              <label for="f-tel">Teléfono</label>
+              <input
+                type="tel"
+                id="f-tel"
+                placeholder="Ej. +52 664 123 4567"
+                autocomplete="tel"
+              />
+            </div>
+            <div class="field">
+              <label for="f-dir">Dirección</label>
+              <input
+                type="text"
+                id="f-dir"
+                placeholder="Calle, colonia, ciudad"
+                autocomplete="street-address"
+              />
+            </div>
+            <div class="field">
+              <label for="f-servicio">Servicio de interés</label>
+              <select id="f-servicio">
+                <option value="web">Desarrollo Web</option>
+                <option value="saas">SaaS</option>
+                <option value="chatbot">ChatBot</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-estado">Estado de seguimiento</label>
+              <select id="f-estado">
+                <option value="pendiente">Pendiente</option>
+                <option value="exitosa">Llamada Exitosa</option>
+                <option value="fallida">Llamada Fallida</option>
+              </select>
+            </div>
+            <div class="field">
+              <div class="field-inline">
+                <input type="checkbox" id="f-cita-toggle" />
+                <label for="f-cita-toggle">Agendar reunión virtual</label>
+              </div>
+              <div id="f-cita-fields" class="cita-fields">
+                <label class="field-sub-label" for="f-cita">Fecha y hora</label>
+                <input type="datetime-local" id="f-cita" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="f-notas">Nota personalizada</label>
+              <textarea
+                id="f-notas"
+                rows="3"
+                placeholder="Contexto, interés, próximos pasos..."
+              ></textarea>
+            </div>
+            <button type="button" class="btn-add" id="btn-add">
+              Registrar cliente
+            </button>
+          </div>
+
+          <div class="filters-section">
+            <div class="filters-title">Filtro rápido · servicio</div>
+            <div class="filter-tags">
+              <button
+                type="button"
+                class="filter-tag active"
+                data-filter-servicio="all"
+              >
+                Todos
+              </button>
+              <button type="button" class="filter-tag" data-filter-servicio="web">
+                Web
+              </button>
+              <button type="button" class="filter-tag" data-filter-servicio="saas">
+                SaaS
+              </button>
+              <button
+                type="button"
+                class="filter-tag"
+                data-filter-servicio="chatbot"
+              >
+                ChatBot
+              </button>
+              <button type="button" class="filter-tag" data-filter-servicio="otro">
+                Otro
+              </button>
+            </div>
+          </div>
+
+          <div class="filters-section filters-section--tight">
+            <div class="filters-title">Filtro rápido · estado</div>
+            <div class="filter-tags">
+              <button
+                type="button"
+                class="filter-tag active"
+                data-filter-estado="all"
+              >
+                Todos
+              </button>
+              <button
+                type="button"
+                class="filter-tag"
+                data-filter-estado="pendiente"
+              >
+                Pendiente
+              </button>
+              <button
+                type="button"
+                class="filter-tag"
+                data-filter-estado="exitosa"
+              >
+                Llamada Exitosa
+              </button>
+              <button
+                type="button"
+                class="filter-tag"
+                data-filter-estado="fallida"
+              >
+                Llamada Fallida
+              </button>
+            </div>
+          </div>
+
+          <div class="filters-section filters-section--tight">
+            <div class="filters-title">Filtro rápido · cita</div>
+            <div class="filter-tags">
+              <button
+                type="button"
+                class="filter-tag active"
+                data-filter-cita="all"
+              >
+                Todas
+              </button>
+              <button type="button" class="filter-tag" data-filter-cita="con">
+                Con cita
+              </button>
+              <button type="button" class="filter-tag" data-filter-cita="sin">
+                Sin cita
+              </button>
+              <button type="button" class="filter-tag" data-filter-cita="proximas">
+                Próximas citas
+              </button>
+              <button type="button" class="filter-tag" data-filter-cita="pasadas">
+                Citas pasadas
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <div class="main-panel">
+          <div class="toolbar">
+            <div class="toolbar-row">
+              <div class="search-bar toolbar-search">
+                <svg
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  type="search"
+                  id="searchInput"
+                  placeholder="Buscar en nombre, teléfono, dirección, notas, etiquetas..."
+                  autocomplete="off"
+                />
+              </div>
+              <div class="toolbar-field toolbar-field--sort">
+                <label for="sortBy">Ordenar por</label>
+                <select id="sortBy">
+                  <option value="created_desc">Registro: más reciente</option>
+                  <option value="created_asc">Registro: más antiguo</option>
+                  <option value="nombre_asc">Nombre A → Z</option>
+                  <option value="nombre_desc">Nombre Z → A</option>
+                  <option value="cita_asc">Cita: próxima primero</option>
+                  <option value="cita_desc">Cita: más lejana primero</option>
+                </select>
+              </div>
+              <button type="button" class="btn-reset-filters" id="btn-reset-filters">
+                Limpiar filtros
+              </button>
+            </div>
+            <div class="loading-banner" id="loadingLine">Sincronizando con Firestore…</div>
+          </div>
+
+          <div id="cardsList" class="cards-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
