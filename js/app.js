@@ -1,4 +1,9 @@
-import { db } from "./firebase.js";
+import { auth, db } from "./firebase.js";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 import {
   addDoc,
   collection,
@@ -95,6 +100,42 @@ function showToast(msg, isError = false) {
   t.classList.toggle("error", isError);
   t.classList.add("show");
   setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+function authErrorMessage(code) {
+  const map = {
+    "auth/invalid-credential":
+      "Correo o contraseña incorrectos.",
+    "auth/wrong-password": "Contraseña incorrecta.",
+    "auth/user-not-found": "No existe una cuenta con este correo.",
+    "auth/invalid-email": "El correo no es válido.",
+    "auth/user-disabled": "Esta cuenta fue deshabilitada.",
+    "auth/too-many-requests":
+      "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+    "auth/network-request-failed":
+      "Sin conexión. Comprueba tu red e inténtalo de nuevo.",
+  };
+  return map[code] || "No se pudo iniciar sesión. Inténtalo de nuevo.";
+}
+
+function clearSessionData() {
+  if (unsubscribe) {
+    unsubscribe();
+    unsubscribe = null;
+  }
+  contacts = [];
+  const list = $("cardsList");
+  if (list) {
+    list.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🔒</div>
+        <p>Inicia sesión para ver y gestionar los prospectos.</p>
+      </div>`;
+  }
+  const tc = $("totalCount");
+  if (tc) tc.textContent = "0 clientes";
+  const ll = $("loadingLine");
+  if (ll) ll.textContent = "";
 }
 
 function getFormPayload() {
@@ -622,6 +663,34 @@ function bindFilterButtons() {
   });
 }
 
+function bindAuthUi() {
+  $("form-login").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = $("login-email").value.trim();
+    const password = $("login-password").value;
+    const errEl = $("auth-error");
+    errEl.textContent = "";
+    const btn = $("btn-login");
+    btn.disabled = true;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (ex) {
+      errEl.textContent = authErrorMessage(ex?.code);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $("btn-sign-out").addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+    } catch (e) {
+      console.error(e);
+      showToast("No se pudo cerrar sesión.", true);
+    }
+  });
+}
+
 function init() {
   $("btn-add").addEventListener("click", addContact);
   $("searchInput").addEventListener("input", renderCards);
@@ -634,12 +703,32 @@ function init() {
   bindEditCitaClear();
   bindDelegated();
   bindFilterButtons();
+  bindAuthUi();
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && e.ctrlKey) addContact();
   });
 
-  subscribe();
+  onAuthStateChanged(auth, (user) => {
+    const checking = $("auth-checking");
+    const loginPanel = $("auth-login");
+    const gate = $("auth-gate");
+    const shell = $("app-shell");
+
+    if (checking) checking.hidden = true;
+
+    if (user) {
+      if (loginPanel) loginPanel.hidden = true;
+      if (gate) gate.hidden = true;
+      if (shell) shell.hidden = false;
+      subscribe();
+    } else {
+      clearSessionData();
+      if (loginPanel) loginPanel.hidden = false;
+      if (gate) gate.hidden = false;
+      if (shell) shell.hidden = true;
+    }
+  });
 }
 
 init();

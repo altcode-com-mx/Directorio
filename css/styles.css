@@ -25,6 +25,114 @@ body {
   min-height: 100vh;
 }
 
+.auth-gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-gate[hidden] {
+  display: none !important;
+}
+
+.auth-checking {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--muted);
+  font-family: "DM Mono", monospace;
+  font-size: 0.85rem;
+}
+
+/* [hidden] pierde frente a `display: flex` si no se refuerza */
+.auth-checking[hidden] {
+  display: none !important;
+}
+
+.auth-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: authSpin 0.75s linear infinite;
+}
+
+@keyframes authSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.auth-login {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.auth-card-header {
+  padding: 22px 24px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo--auth {
+  margin-bottom: 10px;
+}
+
+.auth-lead {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.auth-form {
+  padding: 18px 24px 22px;
+}
+
+.auth-error {
+  font-size: 0.8rem;
+  color: var(--danger);
+  min-height: 1.2em;
+  margin: -4px 0 6px;
+}
+
+.app-shell[hidden] {
+  display: none !important;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-sign-out {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  font-family: "DM Mono", monospace;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.btn-sign-out:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
