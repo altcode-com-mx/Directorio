@@ -94,18 +94,19 @@
               />
             </div>
             <div class="field">
-              <label for="f-dir">Dirección</label>
+              <label for="f-maps">Enlace de Google Maps</label>
               <input
-                type="text"
-                id="f-dir"
-                placeholder="Calle, colonia, ciudad"
-                autocomplete="street-address"
+                type="url"
+                id="f-maps"
+                placeholder="Pega el enlace compartido de Maps (maps.app.goo.gl o similar)"
+                autocomplete="off"
               />
             </div>
             <div class="field">
               <label for="f-servicio">Servicio de interés</label>
               <select id="f-servicio">
                 <option value="web">Desarrollo Web</option>
+                <option value="web_chatbot">Desarrollo Web + ChatBot</option>
                 <option value="saas">SaaS</option>
                 <option value="chatbot">ChatBot</option>
                 <option value="otro">Otro</option>
@@ -154,6 +155,13 @@
               </button>
               <button type="button" class="filter-tag" data-filter-servicio="web">
                 Web
+              </button>
+              <button
+                type="button"
+                class="filter-tag"
+                data-filter-servicio="web_chatbot"
+              >
+                Web + ChatBot
               </button>
               <button type="button" class="filter-tag" data-filter-servicio="saas">
                 SaaS
@@ -250,7 +258,7 @@
                 <input
                   type="search"
                   id="searchInput"
-                  placeholder="Buscar en nombre, teléfono, dirección, notas, etiquetas..."
+                  placeholder="Buscar en nombre, teléfono, enlace Maps, notas, etiquetas..."
                   autocomplete="off"
                 />
               </div>

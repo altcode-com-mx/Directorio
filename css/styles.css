@@ -286,6 +286,33 @@ header {
   display: block;
 }
 
+.edit-cita-fields {
+  margin-top: 8px;
+}
+
+.edit-field .field-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.edit-field .field-inline input[type="checkbox"] {
+  width: auto;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.edit-field .field-inline label {
+  margin-bottom: 0;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.85rem;
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+}
+
 .field-sub-label {
   font-size: 0.72rem;
   color: var(--muted);
@@ -296,8 +323,8 @@ header {
   letter-spacing: 0.06em;
 }
 
-.card-edit .edit-field input[type="datetime-local"] {
-  margin-top: 8px;
+.card-edit .edit-cita-fields input[type="datetime-local"] {
+  margin-top: 0;
 }
 
 .btn-add {
@@ -569,6 +596,11 @@ header {
   color: #f472b6;
 }
 
+.tag-web-chatbot {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
 .tag-otro {
   background: rgba(139, 92, 246, 0.15);
   color: #a78bfa;
@@ -626,18 +658,52 @@ header {
   color: var(--text);
 }
 
+.maps-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.maps-link:hover {
+  color: var(--accent2);
+}
+
 .cita-row {
   display: flex;
   align-items: center;
   gap: 7px;
   font-size: 0.82rem;
-  color: var(--accent);
   margin-top: 4px;
   font-family: "DM Mono", monospace;
+  padding: 6px 10px;
+  margin-left: -10px;
+  margin-right: -10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
 }
 
-.cita-row.past {
+.cita-row.cita-past {
   color: var(--muted);
+  background: rgba(107, 107, 128, 0.12);
+  border-color: rgba(107, 107, 128, 0.25);
+}
+
+.cita-row.cita-soon {
+  color: #fb7185;
+  background: rgba(251, 113, 133, 0.1);
+  border-color: rgba(251, 113, 133, 0.35);
+}
+
+.cita-row.cita-medium {
+  color: var(--warning);
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.cita-row.cita-far {
+  color: #7dd3fc;
+  background: rgba(125, 211, 252, 0.08);
+  border-color: rgba(125, 211, 252, 0.25);
 }
 
 .card-notes {

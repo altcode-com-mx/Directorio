@@ -19,6 +19,10 @@ const COLLECTION = "clientes";
 
 const SERVICIO = {
   web: { label: "Desarrollo Web", cls: "tag-web" },
+  web_chatbot: {
+    label: "Desarrollo Web + ChatBot",
+    cls: "tag-web-chatbot",
+  },
   saas: { label: "SaaS", cls: "tag-saas" },
   chatbot: { label: "ChatBot", cls: "tag-chatbot" },
   otro: { label: "Otro", cls: "tag-otro" },
@@ -94,6 +98,31 @@ function isCitaPast(iso) {
   return !Number.isNaN(t) && t < Date.now();
 }
 
+/** Devuelve clases CSS según si la cita ya pasó, es muy pronto, mediano plazo o lejana. */
+function getCitaTimingClasses(iso) {
+  if (!iso) return "cita-row";
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return "cita-row";
+  const now = Date.now();
+  if (t < now) return "cita-row cita-past";
+  const diff = t - now;
+  const HOUR = 3600000;
+  const DAY = 24 * HOUR;
+  if (diff <= DAY) return "cita-row cita-soon";
+  if (diff <= 7 * DAY) return "cita-row cita-medium";
+  return "cita-row cita-far";
+}
+
+/** Normaliza texto pegado a una URL usable en el navegador (Maps u otra). */
+function normalizeMapsHref(raw) {
+  const s = String(raw ?? "").trim();
+  if (!s) return "";
+  if (/^https?:\/\//i.test(s)) return s;
+  if (/^(maps\.google|goo\.gl|maps\.app\.goo\.gl)/i.test(s))
+    return "https://" + s.replace(/^\/+/, "");
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s)}`;
+}
+
 function showToast(msg, isError = false) {
   const t = $("toast");
   t.textContent = msg;
@@ -141,7 +170,7 @@ function clearSessionData() {
 function getFormPayload() {
   const nombre = $("f-nombre").value.trim();
   const telefono = $("f-tel").value.trim();
-  const direccion = $("f-dir").value.trim();
+  const mapsUrl = $("f-maps").value.trim();
   const servicio = $("f-servicio").value;
   const notas = $("f-notas").value.trim();
   const estado = $("f-estado").value;
@@ -165,7 +194,7 @@ function getFormPayload() {
   return {
     nombre,
     telefono,
-    direccion,
+    mapsUrl,
     servicio,
     notas,
     estado,
@@ -235,7 +264,7 @@ function cancelEdit(id) {
 function getEditPayload(id) {
   const nombre = $("e-nombre-" + id).value.trim();
   const telefono = $("e-tel-" + id).value.trim();
-  const direccion = $("e-dir-" + id).value.trim();
+  const mapsUrl = $("e-maps-" + id).value.trim();
   const servicio = $("e-servicio-" + id).value;
   const notas = $("e-notas-" + id).value.trim();
   const estado = $("e-estado-" + id).value;
@@ -259,7 +288,7 @@ function getEditPayload(id) {
   return {
     nombre,
     telefono,
-    direccion,
+    mapsUrl,
     servicio,
     notas,
     estado,
@@ -339,7 +368,7 @@ function matchesSearch(c, q) {
   const hay = [
     c.nombre,
     c.telefono,
-    c.direccion,
+    c.mapsUrl,
     c.notas,
     SERVICIO[c.servicio]?.label,
     ESTADO[c.estado]?.label,
@@ -450,8 +479,8 @@ function renderCards() {
         label: c.estado || "—",
         cls: "status-pendiente",
       };
-      const citaPast = c.citaIso && isCitaPast(c.citaIso);
-      const citaClass = citaPast ? "cita-row past" : "cita-row";
+      const citaClass = getCitaTimingClasses(c.citaIso);
+      const mapsHref = c.mapsUrl ? normalizeMapsHref(c.mapsUrl) : "";
 
       const citaLocalValue = c.citaIso
         ? (() => {
@@ -482,12 +511,12 @@ function renderCards() {
                   : ""
               }
               ${
-                c.direccion
-                  ? `<div class="meta-row">
+                mapsHref
+                  ? `<div class="meta-row meta-row-maps">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
                 </svg>
-                <span>${esc(c.direccion)}</span>
+                <a class="maps-link" href="${esc(mapsHref)}" target="_blank" rel="noopener noreferrer">Abrir ubicación en Google Maps</a>
               </div>`
                   : ""
               }
@@ -539,6 +568,7 @@ function renderCards() {
               <label>Servicio de interés</label>
               <select id="e-servicio-${esc(c.id)}">
                 <option value="web" ${c.servicio === "web" ? "selected" : ""}>Desarrollo Web</option>
+                <option value="web_chatbot" ${c.servicio === "web_chatbot" ? "selected" : ""}>Desarrollo Web + ChatBot</option>
                 <option value="saas" ${c.servicio === "saas" ? "selected" : ""}>SaaS</option>
                 <option value="chatbot" ${c.servicio === "chatbot" ? "selected" : ""}>ChatBot</option>
                 <option value="otro" ${c.servicio === "otro" ? "selected" : ""}>Otro</option>
@@ -553,12 +583,18 @@ function renderCards() {
               </select>
             </div>
             <div class="edit-field" style="grid-column:1/-1">
-              <label>Dirección</label>
-              <input type="text" id="e-dir-${esc(c.id)}" value="${esc(c.direccion || "")}">
+              <label>Enlace de Google Maps</label>
+              <input type="url" id="e-maps-${esc(c.id)}" value="${esc(c.mapsUrl || "")}" placeholder="https://maps.app.goo.gl/...">
             </div>
             <div class="edit-field" style="grid-column:1/-1">
-              <label class="field-inline"><input type="checkbox" id="e-cita-toggle-${esc(c.id)}" ${c.citaIso ? "checked" : ""}> Agendar reunión virtual</label>
-              <input type="datetime-local" id="e-cita-${esc(c.id)}" value="${esc(citaLocalValue)}">
+              <div class="field-inline">
+                <input type="checkbox" id="e-cita-toggle-${esc(c.id)}" ${c.citaIso ? "checked" : ""}>
+                <label for="e-cita-toggle-${esc(c.id)}">Agendar reunión virtual</label>
+              </div>
+              <div id="e-cita-fields-${esc(c.id)}" class="edit-cita-fields cita-fields ${c.citaIso ? "visible" : ""}">
+                <label class="field-sub-label" for="e-cita-${esc(c.id)}">Fecha y hora</label>
+                <input type="datetime-local" id="e-cita-${esc(c.id)}" value="${esc(citaLocalValue)}">
+              </div>
             </div>
             <div class="edit-field" style="grid-column:1/-1">
               <label>Notas</label>
@@ -578,7 +614,7 @@ function renderCards() {
 function clearForm() {
   $("f-nombre").value = "";
   $("f-tel").value = "";
-  $("f-dir").value = "";
+  $("f-maps").value = "";
   $("f-servicio").value = "web";
   $("f-notas").value = "";
   $("f-estado").value = "pendiente";
@@ -604,10 +640,11 @@ function subscribe() {
     (snap) => {
       contacts = snap.docs.map((d) => {
         const x = d.data();
+        const legacyDir = x.direccion ?? x.dir ?? "";
         return {
           id: d.id,
           ...x,
-          direccion: x.direccion ?? x.dir ?? "",
+          mapsUrl: String(x.mapsUrl ?? legacyDir ?? "").trim(),
         };
       });
       $("loadingLine").textContent = "";
@@ -628,6 +665,8 @@ function bindEditCitaClear() {
     if (!t?.id?.startsWith("e-cita-toggle-")) return;
     const suffix = t.id.slice("e-cita-toggle-".length);
     const inp = document.getElementById(`e-cita-${suffix}`);
+    const box = document.getElementById(`e-cita-fields-${suffix}`);
+    if (box) box.classList.toggle("visible", t.checked);
     if (inp && !t.checked) inp.value = "";
   });
 }
